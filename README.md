@@ -5,7 +5,7 @@ This is a tiny library for extracting table(s) from a .docx Word document.
 
 To use:
 
-```
+```python
 from extract_table_from_docx import extract_table_from_docx
 
 tables = extract_table_from_docx(sys.argv[1])
@@ -26,7 +26,7 @@ for row_i in range(0, table.length):
 
 And output:
 
-```python
+```
 $ python3 example.py sample.docx  
        1,1|       1,2|       1,3|       1,4|       1,5
        2,1|       1,2|       2,3|       2,3|       2,5
