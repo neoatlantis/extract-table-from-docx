@@ -12,6 +12,6 @@ def extract_table_from_docx(filepath):
     tables = xml.find_all("w:tbl")
 
     for table in tables:
-        t = Table(table)
+        yield Table(table)
         
     
