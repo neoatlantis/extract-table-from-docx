@@ -14,9 +14,10 @@ class TableCell:
 
         vMerge = preamble.find("w:vMerge")
         if vMerge:
-            self.vMerge = getattr(vMerge, "w:val", "continue")
+            self.vMerge = vMerge["w:val"] if "w:val" in vMerge else "continue"
         else:
             self.vMerge = None
+        #print("(%d,%d) vMerge=%s" % (self.row_id, self.cell_id, self.vMerge), self.__compute_value())
         
         gridSpan = preamble.find("w:gridSpan")
         if gridSpan:
@@ -31,16 +32,23 @@ class TableCell:
         return " ".join([e.getText() for e in self.__p.find_all("w:t")])
 
 
-
-
     @property
     def value(self):
-        # if not merged vertically, return self value
+        # Returns cell value, when this cell is not merged, or is start point
+        # of a vertical merge (restart)
         if not self.vMerge or self.vMerge == "restart":
             return self.__compute_value()
-        # if vMerged, return self value, when self is restart, otherwise,
-        # return value of last row
-        return self.parent.parent.row(self.row_id-1).cell(self.cell_id).value
+        # Dealing "continue" cells ---> Check above cell.
+        # - If above cell is "continue", ask the value recursively.
+        # - If it's restart, use its value.
+        # - If above cell is None and we are still trying to "continue" from
+        #   it, which is not expected, treat current cell as "restart", that is,
+        #   return current cell value. 
+        above_cell = self.parent.parent.row(self.row_id-1).cell(self.cell_id)
+        if above_cell.vMerge in ["continue", "restart"]:
+            return above_cell.value
+        else:
+            return self.__compute_value()
 
     @property 
     def colspan(self):
