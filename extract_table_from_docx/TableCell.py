@@ -14,7 +14,7 @@ class TableCell:
 
         vMerge = preamble.find("w:vMerge")
         if vMerge:
-            self.vMerge = vMerge["w:val"]
+            self.vMerge = getattr(vMerge, "w:val", "continue")
         else:
             self.vMerge = None
         
